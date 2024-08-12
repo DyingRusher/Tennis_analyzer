@@ -40,6 +40,7 @@ class PlayerTracker:
                 player_dict[track_id] = re
 
         return player_dict
+        
     def draw_box(self,video,detection):
         
         out_vi = []
@@ -51,7 +52,7 @@ class PlayerTracker:
             for track_id,box in player_dic.items():
                 x1,y1,x2,y2 = box
                 cv2.putText(frame,f"Player id:{track_id}",(int(box[0]),int(box[1]- 10)),cv2.FONT_HERSHEY_COMPLEX,0.6,(134,245,7),2)
-                cv2.rectangle(frame,(int(x1),int(y1)),(int(x2),int(y2)),(10,213,123),2)
+                cv2.rectangle(frame,(int(x1),int(y1)),(int(x2),int(y2)),(134,245,7),2)
             out_vi.append(frame)
             # print(f'frame{i}/{len(video)}/{len(detection)}')
 
