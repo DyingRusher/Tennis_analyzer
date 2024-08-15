@@ -6,7 +6,7 @@ def read_video(video_path):
     frames = []
 
     co = 0
-    while co < 50:
+    while co < 100:
         ret,fram = cap.read()
         if not ret:
             break

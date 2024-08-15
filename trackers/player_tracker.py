@@ -1,11 +1,53 @@
 from ultralytics import YOLO
 import cv2
 import pickle
-
+import sys
+sys.path.append('../')
+from utils import measure_dis,find_center_bbox
 class PlayerTracker:
 
     def __init__(self,model_path):
         self.model = YOLO(model_path)
+
+
+    def filter_player(self,player_detection,court_detection):
+        player_detection_1_frame = player_detection[0]
+        # print("c",court_detection)
+
+        chosen_player = self.choose_player(player_detection_1_frame,court_detection)
+        #this logic is not applicable in this video so i did it manually
+        chosen_player = (1,2)
+        # print('f',chosen_player)
+        final_player = []
+        for i in player_detection:
+            final_player_dict = {track_id:bbox for track_id,bbox in i.items() if track_id in chosen_player}
+            final_player.append(final_player_dict)
+        
+        
+        return final_player
+    
+    def choose_player(self,player_dict,court_dect):
+        dis = []
+
+        #below code does keep record of every [player id , nearest point to court in entire video] and appendind to dis
+        for track_id,bbox in player_dict.items():
+            center = find_center_bbox(bbox)
+            
+            min_dis = float('inf')
+            for i in range(0,len(court_dect),2):
+                court_keypoint = (court_dect[i],court_dect[i+1])
+                di = measure_dis(center,court_keypoint)
+                print(track_id,i,di,court_keypoint,center)
+
+                if di < min_dis:
+                    min_dis = di
+                
+            dis.append([track_id,min_dis])
+        
+        # sort to minimum distance to court
+        dis.sort(key = lambda x : x[1])
+        print(dis)
+        return (dis[0][0],dis[1][0])
 
     def detect_frames(self,frames,read_from_stubs=False,stub_path = None):
         player_dec = []

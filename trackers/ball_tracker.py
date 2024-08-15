@@ -1,11 +1,29 @@
 from ultralytics import YOLO
 import cv2
 import pickle
+import pandas as pd
+import numpy as np
 
 class BallTracker:
 
     def __init__(self,model_path):
         self.model = YOLO(model_path)
+
+    def interpolation_ball_position(self,ball_pos):  # give position of when it is undected by yolo
+
+        ball_pos = [x.get(1,[]) for x in ball_pos] # x.get(key,value) if key is not present return value
+        
+        df_ball = pd.DataFrame(ball_pos,columns=['x1','y1','x2','y2'])
+        
+        #interpolation the missing
+        df_ball = df_ball.interpolate() # give avg(around that frame) value to missing value
+        
+        df_ball = df_ball.bfill() # if first few frame has missing value initlize that value to first non-missing value
+        
+        #convert back from df to list
+        df_ball = [{1:x} for x in df_ball.to_numpy().tolist()]
+        
+        return df_ball
 
     def detect_frames(self,frames,read_from_stubs=False,stub_path = None):
         ball_dec = []

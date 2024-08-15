@@ -38,8 +38,8 @@ class CourtLineDetection:
             # print(i)
             x = int(keypo[i])
             y = int(keypo[i+1])
-            cv2.putText(img,str(i//2),(x,y-10),cv2.FONT_HERSHEY_SIMPLEX,1,(120,180,34))
-            cv2.circle(img,(x,y),5,(120,180,23),-1)
+            cv2.putText(img,str(i//2),(x+113,y+103),cv2.FONT_HERSHEY_SIMPLEX,1,(120,180,34))
+            cv2.circle(img,(x+113,y+113),5,(120,180,23),-1)
         return img
     
     def draw_kp_video(self,video,keypo):
