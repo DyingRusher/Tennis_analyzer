@@ -8,14 +8,12 @@ def main():
     in_video_path = 'tennis_video.mp4'
     video_frames = read_video(in_video_path)
 
-
     #detect players from list of frame
     player_tra = PlayerTracker('yolov8l.pt')
     ball_tra = BallTracker('best3.pt')
+    
     #court line dect
     co_line_tra = CourtLineDetection('keypoint_model.pth')
-
-    
 
     ball_detection = ball_tra.detect_frames(video_frames,True,stub_path='tracker_stubs/ball_detction.pkl')
     ball_detection = ball_tra.interpolation_ball_position(ball_detection)
@@ -36,13 +34,11 @@ def main():
     out_vi = co_line_tra.draw_kp_video(out_vi,court_keypoints)
 
     ##draw frame number top right corner
-    for i,frame in enumerate(out_vi):
-        cv2.rectangle(frame,(40,10),(640,120),(230,150,100),-1)
-        cv2.putText(frame,f"Frame:{i}",(50,100),cv2.FONT_HERSHEY_SIMPLEX,4,(50,10,18),4)
-
+    # for i,frame in enumerate(out_vi):
+        # cv2.rectangle(frame,(40,10),(640,120),(230,150,100),-1)
+        # cv2.putText(frame,f"Frame:{i}",(50,100),cv2.FONT_HERSHEY_SIMPLEX,4,(50,10,18),4)
 
     save_video(out_vi, 'output/output.avi')
-   
     print("aj")
 
 if __name__ == "__main__":

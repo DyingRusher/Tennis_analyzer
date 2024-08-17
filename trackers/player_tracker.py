@@ -37,7 +37,7 @@ class PlayerTracker:
             for i in range(0,len(court_dect),2):
                 court_keypoint = (court_dect[i],court_dect[i+1])
                 di = measure_dis(center,court_keypoint)
-                print(track_id,i,di,court_keypoint,center)
+                # print(track_id,i,di,court_keypoint,center)
 
                 if di < min_dis:
                     min_dis = di
@@ -46,7 +46,7 @@ class PlayerTracker:
         
         # sort to minimum distance to court
         dis.sort(key = lambda x : x[1])
-        print(dis)
+        # print(dis)
         return (dis[0][0],dis[1][0])
 
     def detect_frames(self,frames,read_from_stubs=False,stub_path = None):
