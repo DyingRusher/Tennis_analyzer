@@ -8,7 +8,7 @@ def read_video(video_path):
     co = 0
     while co < 100:
         ret,fram = cap.read()
-        print("he0",fram.shape)
+        # print("he0",fram.shape)
         # fram = cv2.resize(fram,(244,244))
         if not ret:
             break
