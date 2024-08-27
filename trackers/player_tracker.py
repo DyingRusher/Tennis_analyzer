@@ -88,8 +88,6 @@ class PlayerTracker:
         out_vi = []
 
         for i,(frame,player_dic) in enumerate(zip(video,detection)):
-            if i > 50:
-                break
             #draw player detection
             for track_id,box in player_dic.items():
                 x1,y1,x2,y2 = box

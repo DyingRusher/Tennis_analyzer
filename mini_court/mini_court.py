@@ -7,7 +7,7 @@ class Mini_court:
 
     def __init__(self,frame):
         self.rectangle_width = 250
-        self.rectangle_height = 650
+        self.rectangle_height = 500
         self.buffer = 50
         self.padding = 20
 
@@ -23,10 +23,10 @@ class Mini_court:
     
 
     def set_c_lines(self):
-        # self.lines = [
-        #     (0,2),(4,5),(6,7),(1,3),(0,1)(8,9),(10,11),(12,13),(2,3)
-        # ]
-        pass
+        self.lines = [
+            (0,2),(4,5),(6,7),(1,3),(0,1),(8,9),(10,11),(12,13),(2,3)
+        ]
+        # pass
     def set_c_keypoints(self):
         drawing_keypoints = [0]*28
 
@@ -79,7 +79,8 @@ class Mini_court:
         self.c_start_y = self.start_y + self.padding
         self.c_end_x = self.end_x - self.padding
         self.c_end_y = self.end_y - self.padding
-        self.c_rectangle_width = self.c_end_x - self.c_start_x 
+        self.c_rectangle_width = self.c_end_x - self.c_start_x
+        # print("asd",self.c_end_x,self.c_start_x)
 
     def set_background_rectangle(self,frame):
         
@@ -96,14 +97,27 @@ class Mini_court:
         out = frame.copy()
         alpha = 0.5
         mask = shapes.astype(bool)
-        out[mask] = cv2.addWeighted(frame,alpha,shapes,1 - alpha,0)[mask]
+        out[mask] = cv2.addWeighted(frame,alpha,shapes,1 - alpha,0)[mask] # out = frame*alpha + shapes*(1 - alpha ) + 0
         return out
+    
     def draw_court(self,frame):
         for i in range(0,len(self.drawing_keypoints),2):
             x = int(self.drawing_keypoints[i])
             y = int(self.drawing_keypoints[i+1])
             cv2.circle(frame,(x,y),5,(250,0,0),-1)
+
+        #draw lines
+        for line in self.lines:
+            start_p = (int(self.drawing_keypoints[line[0]*2]),int(self.drawing_keypoints[line[0]*2 +1]))
+            end_p = (int(self.drawing_keypoints[line[1]*2]),int(self.drawing_keypoints[line[1]*2+1]))
+            cv2.line(frame,start_p,end_p,(0,0,0),2)
+        
+
+        #draw net line
+        cv2.line(frame,(self.c_start_x,int((self.c_start_y+self.c_end_y) /2)),(self.c_end_x,int((self.c_start_y+self.c_end_y) /2)),(0,0,123),2)
+        
         return frame
+    
     def draw_mini_court(self,frames):
         out = []
         for frame in frames:
@@ -111,3 +125,12 @@ class Mini_court:
             frame = self.draw_court(frame)  
             out.append(frame)
         return out
+    
+    def get_start_p_c(self):
+        return (self.c_start_x,self.c_start_y)
+    
+    def get_c_width(self):
+        return self.c_rectangle_width
+    
+    def get_c_keypoints(self):
+        return self.drawing_keypoints

@@ -42,6 +42,42 @@ class BallTracker:
                 pickle.dump(ball_dec,f)
         return ball_dec
 
+    def get_ball_shot_frame(self,ball_pos):
+
+        
+            
+
+        ball_pos = [x.get(1,[]) for x in ball_pos] # x.get(key,value) if key is not present return value       
+        df_ball = pd.DataFrame(ball_pos,columns=['x1','y1','x2','y2'])
+        
+        df_ball['y_mid'] = (df_ball['y1'] + df_ball['y2'])/2
+        df_ball['y_mid_rolling_mean'] = df_ball['y_mid'].rolling(window=5,min_periods= 1 , center=False).mean() # it will do mean of preivous 4 + current data 
+        df_ball['delta_y'] = df_ball['y_mid_rolling_mean'].diff()
+        df_ball['ball_hit'] = 0
+
+        min_change_frame_for_hit = 25
+        for i in range(1,len(df_ball) - int(min_change_frame_for_hit*1.2)):
+            neg_position_change = df_ball['delta_y'].iloc[i] > 0 and df_ball['delta_y'].iloc[i+1] < 0
+            pos_position_change = df_ball['delta_y'].iloc[i] < 0 and df_ball['delta_y'].iloc[i+1] > 0
+
+            if neg_position_change or pos_position_change:
+                change_count = 0
+                for change_frame in range(i+1,i+int(min_change_frame_for_hit*1.2) +1):
+                    neg_position_change_following_frame = df_ball['delta_y'].iloc[i] > 0 and df_ball['delta_y'].iloc[change_frame] < 0
+                    pos_position_change_following_frame = df_ball['delta_y'].iloc[i] < 0 and df_ball['delta_y'].iloc[change_frame] > 0
+
+                    if neg_position_change and neg_position_change_following_frame:
+                        change_count += 1
+                    elif pos_position_change and pos_position_change_following_frame:
+                        change_count += 1
+
+                if change_count > min_change_frame_for_hit -1 :
+                    df_ball['ball_hit'].iloc[i] = 1
+
+        frames_ball_hit= df_ball[df_ball['ball_hit'] == 1].index.tolist()
+        return  frames_ball_hit
+        
+
     def detect_frame(self,frame):
 
         res = self.model.predict(frame)[0] 
@@ -60,8 +96,7 @@ class BallTracker:
         out_vi = []
 
         for i,(frame,ball_dic) in enumerate(zip(video,detection)):
-            if i > 50:
-                break   
+  
             #draw player detection
             for track_id,box in ball_dic.items():
                 x1,y1,x2,y2 = box

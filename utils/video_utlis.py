@@ -5,15 +5,14 @@ def read_video(video_path):
     cap = cv2.VideoCapture(video_path)
     frames = []
 
-    co = 0
-    while co < 100:
+    while True:
         ret,fram = cap.read()
         # print("he0",fram.shape)
         # fram = cv2.resize(fram,(244,244))
         if not ret:
             break
         frames.append(fram)
-        co = co +1
+        
     cap.release()   
     return frames
 
