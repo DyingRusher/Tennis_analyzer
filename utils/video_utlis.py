@@ -4,8 +4,9 @@ def read_video(video_path):
 
     cap = cv2.VideoCapture(video_path)
     frames = []
-
+    co =0 
     while True:
+        co += 1
         ret,fram = cap.read()
         # print("he0",fram.shape)
         # fram = cv2.resize(fram,(244,244))
